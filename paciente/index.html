@@ -91,6 +91,9 @@ body{
   flex:1; display:flex; flex-direction:column; background:var(--card); border-radius:20px;
   box-shadow:var(--shadow); overflow:hidden; min-height:70vh;
 }
+.subtabs{display:flex; gap:8px; padding:10px 12px; border-bottom:1px solid var(--line); flex-wrap:wrap}
+.subtabs button{flex:1; min-width:120px; padding:10px 12px; border-radius:12px; border:2px solid var(--line); background:transparent; color:var(--ink); font:inherit; font-weight:600; font-size:14px; cursor:pointer}
+.subtabs button.active{border-color:var(--accent); background:color-mix(in srgb,var(--accent) 14%,transparent)}
 .panel iframe{flex:1; width:100%; border:0; min-height:70vh; background:transparent}
 .panel-foot{
   display:flex; justify-content:space-between; align-items:center; gap:10px;
@@ -153,6 +156,7 @@ body{
 
   <div class="stage">
     <div class="panel">
+      <div class="subtabs hidden" id="subtabs"></div>
       <iframe id="frame" title="Ejercicio" allow="microphone; autoplay; fullscreen"></iframe>
       <div class="panel-foot">
         <label class="mark"><input type="checkbox" id="doneChk"> Marcar como hecho hoy</label>
@@ -171,21 +175,27 @@ body{
    CONFIGURACIÓN DE PACIENTES
    Para agregar un paciente nuevo, copia un bloque y cambia los datos.
    'modulos' define qué ejercicios ve cada paciente y en qué orden.
-   Módulos disponibles: respiracion, biofeedback, rango, sesion
+   Módulos disponibles: respiracion, biofeedback (incluye Rango Tonal), sesion
    NOTA: el login es del lado del navegador (sirve para organizar, no
    es seguridad real: cualquiera que lea el código ve las contraseñas).
    ===================================================================== */
 var PACIENTES = {
   'michel': { nombre: 'Michel', clave: '1234',
-              modulos: ['respiracion', 'biofeedback', 'rango', 'sesion'] }
+              modulos: ['respiracion', 'biofeedback', 'sesion'],
+              // ejercicios del Biofeedback que NO se le muestran a este paciente
+              ocultarBiofeedback: ['glideDown'] }
   // 'ana':  { nombre: 'Ana', clave: 'abcd', modulos: ['respiracion', 'sesion'] },
 };
 
+/* Cada módulo tiene 1 o más "partes". Biofeedback incluye Rango Tonal. */
 var MODULOS = {
-  respiracion: { ico:'🌬️', titulo:'Respiración Cuadrada',   url:'../respiracion-cuadrada/index.html?embed=1' },
-  biofeedback: { ico:'📶', titulo:'Biofeedback en vivo',    url:'../biofeedback-vocal/index.html?embed=1' },
-  rango:       { ico:'🎚️', titulo:'Rango Tonal',            url:'../rango-tonal-afirmativo/index.html?embed=1' },
-  sesion:      { ico:'💗', titulo:'Sesión diaria',          url:'../sesion-diaria/index.html?embed=1' }
+  respiracion: { ico:'🌬️', titulo:'Respiración Cuadrada',
+    partes:[{ titulo:'Respiración Cuadrada', url:'../respiracion-cuadrada/index.html?embed=1' }] },
+  biofeedback: { ico:'📶', titulo:'Biofeedback y Rango Tonal',
+    partes:[{ titulo:'Biofeedback en vivo', url:'../biofeedback-vocal/index.html?embed=1', biofeedback:true },
+            { titulo:'Rango Tonal',          url:'../rango-tonal-afirmativo/index.html?embed=1' }] },
+  sesion:      { ico:'💗', titulo:'Sesión diaria',
+    partes:[{ titulo:'Sesión diaria', url:'../sesion-diaria/index.html?embed=1' }] }
 };
 
 (function(){
@@ -200,7 +210,7 @@ var MODULOS = {
 
   function entrar(id){
     var p = PACIENTES[id]; if(!p) return false;
-    actual = { id:id, nombre:p.nombre, modulos:p.modulos };
+    actual = { id:id, nombre:p.nombre, modulos:p.modulos, ocultarBiofeedback:p.ocultarBiofeedback||[] };
     lista = p.modulos.filter(function(m){ return MODULOS[m]; });
     try{ sessionStorage.setItem(SKEY, id); }catch(e){}
     $('login').classList.add('hidden');
@@ -234,16 +244,39 @@ var MODULOS = {
     });
   }
 
+  var parte = 0;
+  function urlParte(m, pt){
+    var u = pt.url;
+    if(pt.biofeedback && actual.ocultarBiofeedback && actual.ocultarBiofeedback.length)
+      u += '&hide=' + encodeURIComponent(actual.ocultarBiofeedback.join(','));
+    return u;
+  }
   function ir(i){
     idx = Math.max(0, Math.min(lista.length-1, i));
-    var m = lista[idx];
-    var f = $('frame');
-    f.src = MODULOS[m].url;            // se carga solo el ejercicio activo
-    f.title = MODULOS[m].titulo;
+    mostrarParte(0);
     $('prev').disabled = idx === 0;
     $('next').disabled = idx === lista.length-1;
     refrescar();
     window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function mostrarParte(j){
+    var m = MODULOS[lista[idx]]; parte = j;
+    var pt = m.partes[j];
+    var f = $('frame');
+    f.src = urlParte(m, pt);            // se carga solo la parte activa
+    f.title = pt.titulo;
+    var st = $('subtabs');
+    st.innerHTML = '';
+    if(m.partes.length > 1){
+      m.partes.forEach(function(p2, k){
+        var b = document.createElement('button');
+        b.type = 'button'; b.textContent = p2.titulo;
+        if(k === j) b.className = 'active';
+        b.addEventListener('click', function(){ mostrarParte(k); });
+        st.appendChild(b);
+      });
+      st.classList.remove('hidden');
+    } else { st.classList.add('hidden'); }
   }
 
   function refrescar(){

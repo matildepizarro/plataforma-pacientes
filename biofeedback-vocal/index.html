@@ -248,6 +248,7 @@ html.cv-embed body{padding-top:8px !important;}
 
 </div>
 
+<script>/*hide-ejercicios*/(function(){try{var m=location.search.match(/[?&]hide=([^&]*)/);if(!m)return;var ids=decodeURIComponent(m[1]).split(',');ids.forEach(function(id){var el=document.querySelector('[data-ex="'+id+'"]');if(el&&el.parentNode)el.parentNode.removeChild(el);});}catch(e){}})();</script>
 <script src="../assets/shared.js?v=2"></script>
 <script>
 (function(){
