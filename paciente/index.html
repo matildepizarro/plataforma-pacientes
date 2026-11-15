@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#9b7bd9">
+<title>Mis ejercicios vocales</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='7' fill='%239b7bd9'/%3E%3Ccircle cx='12' cy='12' r='4' fill='white'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f6f1fb; --card:#ffffff; --ink:#2f2a3d; --muted:#7a7390;
+  --accent:#9b7bd9; --accent-2:#e0a5c8; --ok:#4fb894; --line:#e6ddf3;
+  --shadow:0 10px 30px rgba(120,90,180,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#1d1a28; --card:#272336; --ink:#f0ecfa; --muted:#a9a1c2; --line:#3a3450; --shadow:0 10px 30px rgba(0,0,0,.35); }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:linear-gradient(160deg,var(--bg),color-mix(in srgb,var(--accent-2) 18%,var(--bg)));
+  color:var(--ink); -webkit-font-smoothing:antialiased;
+}
+.hidden{display:none !important}
+
+/* ---------- LOGIN ---------- */
+#login{min-height:100%; display:flex; align-items:center; justify-content:center; padding:24px}
+.login-card{
+  width:100%; max-width:400px; background:var(--card); border-radius:24px;
+  padding:34px 28px; box-shadow:var(--shadow); text-align:center;
+}
+.logo{
+  width:64px; height:64px; margin:0 auto 14px; border-radius:20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  display:grid; place-items:center; font-size:30px;
+}
+.login-card h1{margin:0 0 6px; font-size:26px}
+.login-card p{margin:0 0 22px; color:var(--muted); font-size:15px}
+.field{text-align:left; margin-bottom:14px}
+.field label{display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--muted)}
+.field input{
+  width:100%; padding:14px 16px; font-size:17px; border-radius:14px;
+  border:2px solid var(--line); background:transparent; color:var(--ink);
+}
+.field input:focus{outline:none; border-color:var(--accent)}
+.btn{
+  width:100%; padding:15px; font-size:17px; font-weight:700; border:0; border-radius:14px;
+  background:linear-gradient(135deg,var(--accent),#b58ee6); color:#fff; cursor:pointer;
+}
+.btn:hover{filter:brightness(1.06)}
+.error{color:#d14b6b; font-size:14px; min-height:20px; margin:4px 0 10px}
+
+/* ---------- APP ---------- */
+#app{min-height:100%; display:flex; flex-direction:column}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 18px; padding-top:calc(14px + env(safe-area-inset-top,0px));
+}
+.hello h2{margin:0; font-size:21px}
+.hello span{color:var(--muted); font-size:14px}
+.out{
+  background:var(--card); border:1px solid var(--line); color:var(--ink);
+  padding:9px 14px; border-radius:12px; font-size:14px; cursor:pointer;
+}
+.progress{padding:0 18px 4px}
+.bar{height:8px; background:var(--line); border-radius:99px; overflow:hidden}
+.bar > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--ok)); transition:width .4s}
+.progress small{display:block; margin-top:6px; color:var(--muted); font-size:13px}
+
+.steps{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:12px 18px;
+}
+.step{
+  position:relative; background:var(--card); border:2px solid transparent; border-radius:16px;
+  padding:12px 8px; text-align:center; cursor:pointer; box-shadow:var(--shadow);
+  color:var(--ink); font:inherit;
+}
+.step .ico{font-size:24px; display:block}
+.step .t{font-size:13px; font-weight:700; line-height:1.2; display:block; margin-top:4px}
+.step.active{border-color:var(--accent)}
+.step .tick{
+  position:absolute; top:6px; right:6px; width:20px; height:20px; border-radius:50%;
+  background:var(--ok); color:#fff; font-size:12px; display:none; place-items:center;
+}
+.step.done .tick{display:grid}
+
+.stage{flex:1; padding:0 18px 12px; display:flex; flex-direction:column; min-height:0}
+.panel{
+  flex:1; display:flex; flex-direction:column; background:var(--card); border-radius:20px;
+  box-shadow:var(--shadow); overflow:hidden; min-height:70vh;
+}
+.panel iframe{flex:1; width:100%; border:0; min-height:70vh; background:transparent}
+.panel-foot{
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  padding:12px 16px; border-top:1px solid var(--line); flex-wrap:wrap;
+}
+.mark{
+  display:flex; align-items:center; gap:10px; font-size:15px; font-weight:600; cursor:pointer;
+}
+.mark input{width:22px; height:22px; accent-color:var(--ok)}
+.nav button{
+  padding:10px 16px; border-radius:12px; border:1px solid var(--line); background:transparent;
+  color:var(--ink); font-size:15px; cursor:pointer; margin-left:6px;
+}
+.nav button.primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+.nav button:disabled{opacity:.4; cursor:default}
+.note{text-align:center; color:var(--muted); font-size:12px; padding:6px 18px 18px}
+
+@media (max-width:520px){
+  .steps{gap:6px; padding:10px 12px}
+  .step{padding:10px 4px}
+  .step .t{font-size:11px}
+  .stage,.progress,.topbar{padding-left:12px; padding-right:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<section id="login">
+  <form class="login-card" id="loginForm" autocomplete="off">
+    <div class="logo" aria-hidden="true">🎙️</div>
+    <h1>Bienvenido/a</h1>
+    <p>Ingresa para hacer tus ejercicios de hoy</p>
+    <div class="field">
+      <label for="user">Nombre</label>
+      <input id="user" type="text" autocapitalize="words" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="pass">Contraseña</label>
+      <input id="pass" type="password" autocomplete="current-password" required>
+    </div>
+    <div class="error" id="err" role="alert"></div>
+    <button class="btn" type="submit">Ingresar</button>
+  </form>
+</section>
+
+<!-- ================= APP ================= -->
+<main id="app" class="hidden">
+  <div class="topbar">
+    <div class="hello"><h2 id="hello">Hola</h2><span id="today"></span></div>
+    <button class="out" id="logout">Salir</button>
+  </div>
+
+  <div class="progress">
+    <div class="bar"><i id="barFill"></i></div>
+    <small id="progTxt"></small>
+  </div>
+
+  <nav class="steps" id="steps" aria-label="Mis ejercicios"></nav>
+
+  <div class="stage">
+    <div class="panel">
+      <iframe id="frame" title="Ejercicio" allow="microphone; autoplay; fullscreen"></iframe>
+      <div class="panel-foot">
+        <label class="mark"><input type="checkbox" id="doneChk"> Marcar como hecho hoy</label>
+        <div class="nav">
+          <button id="prev">← Anterior</button>
+          <button id="next" class="primary">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="note">Herramienta de entrenamiento vocal — no reemplaza tu sesión con tu fonoaudióloga.</div>
+</main>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN DE PACIENTES
+   Para agregar un paciente nuevo, copia un bloque y cambia los datos.
+   'modulos' define qué ejercicios ve cada paciente y en qué orden.
+   Módulos disponibles: respiracion, biofeedback, rango, sesion
+   NOTA: el login es del lado del navegador (sirve para organizar, no
+   es seguridad real: cualquiera que lea el código ve las contraseñas).
+   ===================================================================== */
+var PACIENTES = {
+  'michel': { nombre: 'Michel', clave: '1234',
+              modulos: ['respiracion', 'biofeedback', 'rango', 'sesion'] }
+  // 'ana':  { nombre: 'Ana', clave: 'abcd', modulos: ['respiracion', 'sesion'] },
+};
+
+var MODULOS = {
+  respiracion: { ico:'🌬️', titulo:'Respiración Cuadrada',   url:'../respiracion-cuadrada/index.html?embed=1' },
+  biofeedback: { ico:'📶', titulo:'Biofeedback en vivo',    url:'../biofeedback-vocal/index.html?embed=1' },
+  rango:       { ico:'🎚️', titulo:'Rango Tonal',            url:'../rango-tonal-afirmativo/index.html?embed=1' },
+  sesion:      { ico:'💗', titulo:'Sesión diaria',          url:'../sesion-diaria/index.html?embed=1' }
+};
+
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var SKEY = 'paciente-sesion';
+  var actual = null, lista = [], idx = 0;
+
+  function hoy(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function doneKey(){ return 'paciente-hecho-'+actual.id+'-'+hoy(); }
+  function getDone(){ try{ return JSON.parse(localStorage.getItem(doneKey())||'{}'); }catch(e){ return {}; } }
+  function setDone(o){ try{ localStorage.setItem(doneKey(), JSON.stringify(o)); }catch(e){} }
+
+  function entrar(id){
+    var p = PACIENTES[id]; if(!p) return false;
+    actual = { id:id, nombre:p.nombre, modulos:p.modulos };
+    lista = p.modulos.filter(function(m){ return MODULOS[m]; });
+    try{ sessionStorage.setItem(SKEY, id); }catch(e){}
+    $('login').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    $('hello').textContent = 'Hola, ' + p.nombre + ' 👋';
+    $('today').textContent = new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});
+    document.title = 'Ejercicios de ' + p.nombre;
+    dibujarPasos(); ir(0);
+    return true;
+  }
+
+  function salir(){
+    try{ sessionStorage.removeItem(SKEY); }catch(e){}
+    $('frame').src = 'about:blank';
+    actual = null;
+    $('app').classList.add('hidden');
+    $('login').classList.remove('hidden');
+    $('pass').value = ''; $('user').value = '';
+    document.title = 'Mis ejercicios vocales';
+  }
+
+  function dibujarPasos(){
+    var nav = $('steps'); nav.innerHTML = '';
+    nav.style.gridTemplateColumns = 'repeat(' + lista.length + ',1fr)';
+    lista.forEach(function(m,i){
+      var b = document.createElement('button');
+      b.className = 'step'; b.type = 'button'; b.dataset.i = i;
+      b.innerHTML = '<span class="tick">✓</span><span class="ico">'+MODULOS[m].ico+'</span><span class="t">'+MODULOS[m].titulo+'</span>';
+      b.addEventListener('click', function(){ ir(i); });
+      nav.appendChild(b);
+    });
+  }
+
+  function ir(i){
+    idx = Math.max(0, Math.min(lista.length-1, i));
+    var m = lista[idx];
+    var f = $('frame');
+    f.src = MODULOS[m].url;            // se carga solo el ejercicio activo
+    f.title = MODULOS[m].titulo;
+    $('prev').disabled = idx === 0;
+    $('next').disabled = idx === lista.length-1;
+    refrescar();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function refrescar(){
+    var d = getDone(), n = 0;
+    Array.prototype.forEach.call($('steps').children, function(b,i){
+      var m = lista[i];
+      b.classList.toggle('active', i === idx);
+      b.classList.toggle('done', !!d[m]);
+      if(d[m]) n++;
+    });
+    $('doneChk').checked = !!d[lista[idx]];
+    $('barFill').style.width = (n/lista.length*100) + '%';
+    $('progTxt').textContent = n === lista.length
+      ? '¡Completaste todos tus ejercicios de hoy! 🎉'
+      : 'Hoy llevas ' + n + ' de ' + lista.length + ' ejercicios';
+  }
+
+  $('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var id = $('user').value.trim().toLowerCase();
+    var p = PACIENTES[id];
+    if(p && p.clave === $('pass').value){
+      $('err').textContent = '';
+      entrar(id);
+    } else {
+      $('err').textContent = 'Nombre o contraseña incorrectos.';
+    }
+  });
+  $('logout').addEventListener('click', salir);
+  $('prev').addEventListener('click', function(){ ir(idx-1); });
+  $('next').addEventListener('click', function(){ ir(idx+1); });
+  $('doneChk').addEventListener('change', function(){
+    var d = getDone(); d[lista[idx]] = this.checked; setDone(d); refrescar();
+  });
+
+  // Mantiene la sesión si recarga la página
+  try{ var s = sessionStorage.getItem(SKEY); if(s) entrar(s); }catch(e){}
+})();
+</script>
+</body>
+</html>
