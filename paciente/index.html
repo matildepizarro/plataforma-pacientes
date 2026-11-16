@@ -6,7 +6,8 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#9b7bd9">
 <title>Mis ejercicios vocales</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='7' fill='%239b7bd9'/%3E%3Ccircle cx='12' cy='12' r='4' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="../assets/logo-icon.png">
+<link rel="apple-touch-icon" href="../assets/logo-icon.png">
 <style>
 :root{
   --bg:#f6f1fb; --card:#ffffff; --ink:#2f2a3d; --muted:#7a7390;
@@ -51,6 +52,13 @@ body{
 }
 .btn:hover{filter:brightness(1.06)}
 .error{color:#d14b6b; font-size:14px; min-height:20px; margin:4px 0 10px}
+
+/* ---------- LOGO FONOAUDIÓLOGA ---------- */
+.brand-logo{display:block;width:230px;max-width:80%;height:auto;margin:0 auto 14px;background:#fff;border-radius:18px;padding:6px}
+.top-logo{display:block;height:46px;width:auto;background:#fff;border-radius:12px;padding:3px 6px;flex:none}
+.foot-logo{display:block;width:130px;height:auto;margin:6px auto 10px;background:#fff;border-radius:14px;padding:4px;opacity:.95}
+.topbar .brand{display:flex;align-items:center;gap:12px;min-width:0}
+@media(max-width:420px){.top-logo{height:38px}}
 
 /* ---------- APP ---------- */
 #app{min-height:100%; display:flex; flex-direction:column}
@@ -197,7 +205,7 @@ button:focus-visible{outline:3px solid var(--accent-2); outline-offset:2px}
 <!-- ================= LOGIN ================= -->
 <section id="login">
   <form class="login-card" id="loginForm" autocomplete="off">
-    <div class="logo" aria-hidden="true">🎙️</div>
+    <img class="brand-logo" src="../assets/logo-matilde-pizarro.png" alt="Matilde Pizarro, fonoaudióloga">
     <h1>Bienvenido/a</h1>
     <p>Ingresa para hacer tus ejercicios de hoy</p>
     <div class="field">
@@ -216,7 +224,7 @@ button:focus-visible{outline:3px solid var(--accent-2); outline-offset:2px}
 <!-- ================= APP ================= -->
 <main id="app" class="hidden">
   <div class="topbar">
-    <div class="hello"><h2 id="hello">Hola</h2><span id="today"></span></div>
+    <div class="brand"><img class="top-logo" src="../assets/logo-matilde-pizarro.png" alt="Matilde Pizarro, fonoaudióloga"><div class="hello"><h2 id="hello">Hola</h2><span id="today"></span></div></div>
     <div class="top-btns"><button class="out help" id="helpBtn" type="button" aria-label="Ver el tour de ayuda">❓ Ayuda</button><button class="out" id="logout">Salir</button></div>
   </div>
 
@@ -244,6 +252,7 @@ button:focus-visible{outline:3px solid var(--accent-2); outline-offset:2px}
       </div>
     </div>
   </div>
+  <img class="foot-logo" src="../assets/logo-matilde-pizarro.png" alt="Matilde Pizarro, fonoaudióloga">
   <div class="note">Herramienta de entrenamiento vocal — no reemplaza tu sesión con tu fonoaudióloga.</div>
 </main>
 
@@ -270,14 +279,25 @@ button:focus-visible{outline:3px solid var(--accent-2); outline-offset:2px}
    ===================================================================== */
 var PACIENTES = {
   'michel': { nombre: 'Michel', clave: '1234',
-              modulos: ['respiracion', 'biofeedback', 'sesion'],
+              modulos: ['rutina', 'biofeedback', 'sesion'],
               // ejercicios del Biofeedback que NO se le muestran a este paciente
-              ocultarBiofeedback: ['glideDown'] }
+              ocultarBiofeedback: ['glideDown'] },
+  'cari':   { nombre: 'Cari', clave: 'soul',
+              modulos: ['rutinaCari', 'vocales'],
+              ocultarBiofeedback: [] }
   // 'ana':  { nombre: 'Ana', clave: 'abcd', modulos: ['respiracion', 'sesion'] },
 };
 
 /* Cada módulo tiene 1 o más "partes". Biofeedback incluye Rango Tonal. */
 var MODULOS = {
+  rutina: { ico:'📅', titulo:'Rutina Semanal',
+    partes:[{ titulo:'Rutina Semanal', guia:'rutina', url:'../rutina-semanal/index.html?embed=1' }] },
+  rutinaCari: { ico:'📅', titulo:'Rutina Semanal',
+    partes:[{ titulo:'Rutina Semanal', guia:'rutina', url:'../rutina-cari/index.html?embed=1' }] },
+  vocales: { ico:'🎵', titulo:'Ejercicios vocales',
+    partes:[{ titulo:'Ejercicios vocales', guia:'vocales', url:'../ejercicios-vocales/index.html?embed=1' }] },
+  biofeedbackLive: { ico:'📶', titulo:'Biofeedback',
+    partes:[{ titulo:'Biofeedback en vivo', guia:'biofeedback', url:'../biofeedback-vocal/index.html?embed=1', biofeedback:true }] },
   respiracion: { ico:'🌬️', titulo:'Respiración Cuadrada',
     partes:[{ titulo:'Respiración Cuadrada', guia:'respiracion', url:'../respiracion-cuadrada/index.html?embed=1' }] },
   biofeedback: { ico:'📶', titulo:'Biofeedback y Rango Tonal',
@@ -417,6 +437,31 @@ var MODULOS = {
      Para editar los textos, modifica los objetos GUIAS y TOUR_PASOS.
      ===================================================================== */
   var GUIAS = {
+    rutina: {
+      ico:'📅', titulo:'Rutina Semanal',
+      corto:'Todos los ejercicios de tu pauta, cada uno con sus cronómetros.',
+      lead:'Cada ejercicio de tu pauta tiene su propio apartado. Ábrelo y sigue los cronómetros y contadores; suena un aviso cuando termina cada paso.',
+      pasos:[
+        ['📂','Abre un ejercicio','Toca su nombre para desplegarlo. Arriba están los de “A diario” y abajo los “Ocasionales” (1 a 2 veces por semana).'],
+        ['⏱️','Cronómetros','Toca “Iniciar”. Al terminar suena un aviso y el paso queda marcado ✓. Si dejas activada la casilla de arriba, el siguiente cronómetro parte solo a los 3 segundos.'],
+        ['🔢','Repeticiones','En los ejercicios de vocalización y enfriamiento toca “Hice una” cada vez que completes una repetición.'],
+        ['🫁','Respiración','El contador te dice cuándo inhalar, mantener y exhalar. En Respiración cuadrada elige un ejercicio de la “Biblioteca”, toca “Iniciar” y sigue el círculo.'],
+        ['🌅','Mañana y noche','Nebulización y Tubo en agua van mejor en la mañana; el Enfriamiento, en la noche.']
+      ],
+      tips:['Todo debe sentirse suave y cómodo, sin forzar la voz.','Si algo molesta o duele, detente y avísale a tu fonoaudióloga.','Mantente hidratado/a durante el día.']
+    },
+    vocales: {
+      ico:'🎵', titulo:'Ejercicios vocales',
+      corto:'Canta junto al piano: rutinas cortas y fáciles.',
+      lead:'Elige tu tono, toca ▶ y canta lo que escuchas. Cada ejercicio se repite 3 veces. Puedes hacer una rutina completa con un solo toque.',
+      pasos:[
+        ['🎚️','Elige tu tono','Arriba toca “Más grave”, “Medio” o “Más agudo”. Con ▼ ▲ lo afinas de a medio tono. Se queda guardado.'],
+        ['▶️','Toca “Hacer toda la rutina”','Suena el piano, tú cantas, y la rutina pasa sola de un ejercicio al siguiente. Toca el botón otra vez para detenerla.'],
+        ['👂','O ejercicio por ejercicio','Toca “Escuchar”, canta lo mismo y toca “Hice una”. Con 3 veces el ejercicio queda ✓.'],
+        ['🎶','Sigue las notas','Las burbujas con Do, Re, Mi… se encienden en el momento en que suena cada nota.']
+      ],
+      tips:['Si la nota es muy alta o muy baja, cambia tu tono de partida.','Canta suave, sin forzar. Si algo duele, detente y avísale a tu fonoaudióloga.','Si no se escucha, sube el volumen y toca ▶ de nuevo.']
+    },
     respiracion: {
       ico:'🌬️', titulo:'Respiración Cuadrada',
       corto:'Calma tu cuerpo y prepara tu voz respirando en 4 tiempos iguales.',
@@ -506,7 +551,7 @@ var MODULOS = {
     { sel:'#progressWrap', ico:'📈', titulo:function(){ return 'Tu progreso de hoy'; },
       texto:'Esta barra se va llenando a medida que completas tus ejercicios. Cada día parte de cero.' },
     { sel:'#steps', ico:'🗂️', titulo:function(){ return 'Tus ejercicios'; },
-      texto:'Estos son los ejercicios de hoy, en orden. Toca uno para abrirlo. Cuando termines uno, aparece un ✓ verde. Algunos ejercicios tienen pestañas, por ejemplo “Biofeedback” y “Rango Tonal”.' },
+      get texto(){ return 'Estos son los ejercicios de hoy, en orden. Toca uno para abrirlo. Cuando termines uno, aparece un ✓ verde.' + (actual && actual.id==='cari' ? '' : ' Algunos ejercicios tienen pestañas, por ejemplo “Biofeedback” y “Rango Tonal”.'); } },
     { sel:'#guidebar', ico:'💡', titulo:function(){ return '¿Cómo se hace?'; },
       texto:'En cada ejercicio toca este botón para ver las instrucciones paso a paso. Se abre sola la primera vez que entras a cada uno.' },
     { sel:'#frame', maxH:200, ico:'🎯', titulo:function(){ return 'Aquí haces el ejercicio'; },
@@ -658,6 +703,10 @@ var MODULOS = {
       else if(e.key === 'ArrowRight' && ti < pasosTour.length-1){ ti++; dibujarTour(); }
       else if(e.key === 'ArrowLeft' && ti > 0){ ti--; dibujarTour(); }
     } else if(e.key === 'Escape' && !$('sheetBack').classList.contains('hidden')){ cerrarGuia(); }
+  });
+  window.addEventListener('message', function(e){ // la rutina puede pedir abrir otra pestaña
+    var d = e.data; if(!d || !d.irA || !actual) return;
+    var i = lista.indexOf(d.irA); if(i < 0) i = lista.indexOf('biofeedbackLive'); if(i >= 0) ir(i);
   });
   $('helpBtn').addEventListener('click', iniciarTour);
   $('guideBtn').addEventListener('click', abrirGuia);
