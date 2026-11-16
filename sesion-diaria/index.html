@@ -210,19 +210,6 @@
   .rightContent{display:flex;flex-direction:column;gap:12px;padding:12px}
   #floatingPanel:not(.floating) .rightContent{padding:0}
 
-  /* ---------- Ventana F0 ---------- */
-  #pitchWindow{
-    position:fixed;z-index:60;left:60px;top:80px;width:420px;border-radius:14px;
-    background:var(--card);border:1px solid var(--border);box-shadow:0 24px 60px rgba(120,70,100,0.28);
-    overflow:hidden;display:flex;flex-direction:column;resize:both;
-  }
-  #pitchWindow.minimized{height:44px;width:240px}
-  #pitchWindow.hidden{display:none}
-  #pitchWindow .pHandle{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;cursor:grab;background:linear-gradient(120deg,var(--primary-2),var(--accent));border-bottom:1px solid var(--border)}
-  #pitchWindow .pHandle span{font-weight:700;color:#3a1c2b;font-size:12.5px}
-  #pitchWindow .pContent{padding:10px}
-  #pitchWindow .resizer{position:absolute;right:6px;bottom:6px;width:14px;height:14px;cursor:se-resize;background:var(--primary-2);border-radius:4px}
-
   .pitchCard canvas{width:100%;height:170px;border-radius:10px;background:var(--bg-2);display:block}
 
   /* ---------- Modal info ---------- */
@@ -243,7 +230,6 @@
   @media (max-width:1020px){
     #floatingPanel{position:static;width:100%}
     #floatingPanel.floating{position:fixed;left:10px;right:10px;width:auto}
-    #pitchWindow{left:10px;right:10px;width:auto}
   }
 </style>
 <script>/*embed-paciente*/(function(){try{if(/[?&]embed=1/.test(location.search)){document.documentElement.classList.add('cv-embed');}}catch(e){}})();</script>
@@ -267,14 +253,14 @@ html.cv-embed body{padding-top:8px !important;}
         </div>
         <div class="titleActions">
           <button class="infoBtn" id="infoBtn" title="Sobre este enfoque" data-i18n-title="titleSobreEnfoque" aria-label="Información sobre este enfoque" data-i18n-aria="titleSobreEnfoque">i</button>
-          <button id="togglePitchVisibilityBtn" class="ghost" title="Mostrar / Ocultar gráfico F0" data-i18n-title="titleTogglePitch">Ocultar gráfico F0</button>
         </div>
       </div>
 
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 4px">
-        <div class="small" id="pitchVisibilityLabel">Gráfico F0: visible (ventana flotante)</div>
         <div class="small" id="sessionSummarySmall" style="color:var(--muted)"></div>
       </div>
+
+      <div id="vozLiveRoot" style="margin:6px 0 14px"></div>
 
       <div class="metaGrid">
         <div class="card">
@@ -484,24 +470,6 @@ html.cv-embed body{padding-top:8px !important;}
           </div>
 
           <div class="rightContent">
-            <div class="card">
-              <div class="cardTitle"><span class="dot"></span><span data-i18n="ctSonometro">Sonómetro — control</span></div>
-              <div class="controls" style="margin-bottom:10px">
-                <button class="primary" id="startAudio" data-i18n="btnIniciarMic">Iniciar micrófono</button>
-                <button class="ghost" id="stopAudio" disabled data-i18n="btnDetener">Detener</button>
-              </div>
-              <div class="row">
-                <button class="ghost" id="setCalib" data-i18n="btnCalibrar">Calibrar</button>
-                <input id="calibKnown" type="number" placeholder="Valor dB de referencia (ej: 70)" data-i18n-placeholder="placeholderCalib" style="flex:1">
-              </div>
-
-              <div class="meterWrap">
-                <div class="meter"><div id="meterFill" class="meterBar"></div></div>
-                <div class="meterValue" id="splDisplay">-- dB</div>
-              </div>
-              <div class="subtle" style="margin-top:8px" data-i18n="subtleSonometro">Medición aproximada de volumen (no calibrada como sonómetro profesional). Útil como apoyo visual de proyección de voz.</div>
-            </div>
-
             <div class="card pitchCard">
               <div class="cardTitle"><span class="dot"></span><span data-i18n="ctGrabaciones">Grabaciones — registrar avances</span></div>
               <div class="row">
@@ -579,23 +547,6 @@ html.cv-embed body{padding-top:8px !important;}
     </footer>
   </div>
 
-  <!-- Ventana flotante de F0 -->
-  <div id="pitchWindow" aria-label="Gráfico de tono F0" data-i18n-aria="ariaGraficoF0">
-    <div class="pHandle" id="pHandle">
-      <span data-i18n="tituloGraficoF0">Gráfico de tono (F0) — tiempo real</span>
-      <div style="display:flex;gap:6px;align-items:center">
-        <span id="f0Estimate" class="small" style="color:#3a1c2b;font-weight:700">F0: —</span>
-        <button class="iconBtn" id="togglePitchMin" title="Minimizar" data-i18n-title="titleMinimizarPanel" aria-label="Minimizar gráfico F0" data-i18n-aria="ariaMinimizarF0">—</button>
-        <button class="iconBtn" id="closePitch" title="Cerrar" data-i18n-title="titleCerrar" aria-label="Cerrar gráfico F0" data-i18n-aria="ariaCerrarF0">✕</button>
-      </div>
-    </div>
-    <div class="pContent" id="pContent">
-      <canvas id="pitchCanvas" width="420" height="200"></canvas>
-      <div class="subtle" style="margin-top:8px" data-i18n="subtleFranjaColor">La franja coloreada muestra el rango de referencia personalizado definido arriba (editable en cualquier momento). No representa una norma de género fija.</div>
-    </div>
-    <div class="resizer" id="pitchResizer" title="Redimensionar" data-i18n-title="titleRedimensionar"></div>
-  </div>
-
   <!-- Modal informativo -->
   <div class="modalOverlay" id="infoModal">
     <div class="modalBox">
@@ -615,6 +566,7 @@ html.cv-embed body{padding-top:8px !important;}
 
   <!-- Librerías externas: jsPDF y JSZip se cargan bajo demanda (ver cvLoadScript en assets/shared.js) la primera vez que se exporta un informe o un ZIP, en vez de descargarse en cada visita a la página. -->
   <script src="../assets/shared.js?v=2"></script>
+  <script src="../assets/voz-live.js?v=1"></script>
 
 <script>
 /* =========================================================
@@ -739,91 +691,32 @@ function onCheckboxChange(e){
   log((window.CV_I18N ? window.CV_I18N.t('logCasillasMarcadas') : function(l,c){return '['+l+'] casillas marcadas: '+c;})(labels[activity]||activity, count));
 }
 
-/* ---------- Sonómetro / lectura visual / F0 ---------- */
-let globalStream = null;
-let audioCtx, analyser, sourceNode, running=false, rafId;
-let calibrationOffset=0; window._lastSpl = null;
-const splDisplay = document.getElementById('splDisplay');
-const meterFill = document.getElementById('meterFill');
-
-async function startAudio(){
-  if(running) return;
-  try{
-    const stream = await navigator.mediaDevices.getUserMedia({audio:{channelCount:1},video:false});
-    globalStream = stream;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 2048;
-    analyser.smoothingTimeConstant = 0.15;
-    sourceNode = audioCtx.createMediaStreamSource(stream);
-    sourceNode.connect(analyser);
-    running = true;
-    document.getElementById('startAudio').disabled = true;
-    document.getElementById('stopAudio').disabled = false;
-    loopAudio();
-    if(!pitchProcessor.initialized){ pitchProcessor.init(stream); }
-    log(tt('logMicActivo','Micrófono: activo'));
-  }catch(e){
-    alert(tt('errNoMic','No se pudo acceder al micrófono: ') + (e.message||e));
-  }
-}
-function stopAudio(){
-  if(!running) return;
-  if(sourceNode && sourceNode.mediaStream) sourceNode.mediaStream.getTracks().forEach(t=>t.stop());
-  if(audioCtx) audioCtx.close();
-  running=false;
-  document.getElementById('startAudio').disabled=false;
-  document.getElementById('stopAudio').disabled=true;
-  cancelAnimationFrame(rafId);
-  meterFill.style.width='0%';
-  if(splDisplay) splDisplay.textContent='-- dB';
-  window._lastSpl = null;
-  pitchProcessor.stop();
-  log(tt('logMicDetenido','Micrófono: detenido'));
-}
-function computeDB(buffer){
-  let sum=0;
-  for(let i=0;i<buffer.length;i++){ const v=buffer[i]; sum += v*v; }
-  const rms = Math.sqrt(sum / buffer.length);
-  if(rms <= 0) return null;
-  const dbfs = 20 * Math.log10(rms);
-  return Math.round((dbfs + calibrationOffset) * 10) / 10;
-}
-function loopAudio(){
-  const buffer = new Float32Array(analyser.fftSize);
-  analyser.getFloatTimeDomainData(buffer);
-  const spl = computeDB(buffer);
-  window._lastSpl = spl;
-  updateGlobalMeter(spl);
-  updateReadingVisualFromGlobal();
-  rafId = requestAnimationFrame(loopAudio);
-}
-function updateGlobalMeter(spl){
-  const min = 30, max = 95;
-  if(spl === null || isNaN(spl)){ splDisplay.textContent='-- dB'; meterFill.style.width='0%'; return; }
-  splDisplay.textContent = spl + ' dB';
-  const pct = Math.max(0, Math.min(100, ((spl - min) / (max - min)) * 100));
-  meterFill.style.width = pct + '%';
-}
-document.getElementById('startAudio').addEventListener('click', startAudio);
-document.getElementById('stopAudio').addEventListener('click', stopAudio);
-document.getElementById('setCalib').addEventListener('click', async ()=>{
-  const v = parseFloat(document.getElementById('calibKnown').value);
-  if(!running){ alert(tt('errIniciaMicCalibrar','Inicia el micrófono antes de calibrar.')); return; }
-  if(isNaN(v)){ alert(tt('errValorNumericoDb','Ingresa un valor numérico de referencia en dB.')); return; }
-  const samples = [];
-  for(let i=0;i<8;i++){
-    await new Promise(r=>setTimeout(r,120));
-    if(window._lastSpl !== null && !isNaN(window._lastSpl)) samples.push(window._lastSpl);
-  }
-  if(samples.length === 0){ alert(tt('errSenalInsuficiente','No se detectó señal de audio suficiente para calibrar. Habla frente al micrófono e inténtalo de nuevo.')); return; }
-  const measured = samples.reduce((a,b)=>a+b,0) / samples.length;
-  const offset = v - measured;
-  calibrationOffset += offset;
-  window._calibrationInfo = 'Offset aplicado: ' + (Math.round(calibrationOffset*10)/10) + ' dB — referencia ' + v + ' dB (' + samples.length + ' muestras válidas)';
-  alert(tt('okCalibracionAplicada','Calibración aplicada. ') + window._calibrationInfo);
-  log(tt('logCalibracion','Calibración: ') + window._calibrationInfo);
+/* ---------- Monitor de voz en vivo (assets/voz-live.js) ---------- */
+window._lastSpl = null;
+var goalMinEl = document.getElementById('goalMinInput');
+var goalMaxEl = document.getElementById('goalMaxInput');
+const voz = VozLive.mount(document.getElementById('vozLiveRoot'), {
+  getTarget: function(){
+    const mn = parseFloat(goalMinEl.value), mx = parseFloat(goalMaxEl.value);
+    return (isFinite(mn) && isFinite(mx) && mx > mn) ? { min: mn, max: mx } : null;
+  },
+  setTarget: function(min, max){
+    goalMinEl.value = min; goalMaxEl.value = max;
+    profile.min = min; profile.max = max;
+    const sel = document.getElementById('goalTypeSelect'); if(sel) sel.value = 'personalizado';
+    try{ localStorage.setItem('vaa_profile', JSON.stringify(profile)); }catch(e){}
+  },
+  onLog: function(m){ log(m); },
+  onFrame: function(){ updateReadingVisualFromGlobal(); }
 });
+[goalMinEl, goalMaxEl, document.getElementById('goalTypeSelect')].forEach(function(e){
+  e.addEventListener('input', function(){ voz.refreshTarget(); });
+  e.addEventListener('change', function(){ voz.refreshTarget(); });
+});
+function currentRange(){
+  return { min: (profile.min===null||profile.min===undefined||isNaN(profile.min)) ? null : profile.min,
+           max: (profile.max===null||profile.max===undefined||isNaN(profile.max)) ? null : profile.max };
+}
 
 /* lectura visual (volumen/proyección) */
 const READING_TARGET_DB = 65;
@@ -855,140 +748,6 @@ function updateReadingVisualFromGlobal(){
   }
   window.__a_lectura_texto_prevBelow = !crossed;
 }
-
-/* ---------- Detección de tono (F0) y gráfico ---------- */
-const pitchCanvas = document.getElementById('pitchCanvas');
-const pitchCtx = pitchCanvas.getContext('2d');
-const pitchData = [];
-const maxPoints = 250;
-const f0LabelEl = document.getElementById('f0Estimate');
-const pitchParams = { sampleRate: 44100, minFreq: 60, maxFreq: 500 };
-
-function currentRange(){
-  return { min: (profile.min===null||profile.min===undefined||isNaN(profile.min)) ? null : profile.min,
-           max: (profile.max===null||profile.max===undefined||isNaN(profile.max)) ? null : profile.max };
-}
-function classifyF0(f){
-  const r = currentRange();
-  if(f === null) return '—';
-  if(r.min === null || r.max === null) return Math.round(f) + ' Hz';
-  if(f < r.min) return Math.round(f) + ' Hz · por debajo del rango de referencia';
-  if(f > r.max) return Math.round(f) + ' Hz · por encima del rango de referencia';
-  return Math.round(f) + ' Hz · dentro del rango de referencia';
-}
-
-const pitchProcessor = {
-  initialized: false, running: false, stream: null, analyserNode: null, ctx: null, tempBuf: null,
-  init: function(stream){
-    if(this.initialized) return;
-    try{
-      this.stream = stream;
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      pitchParams.sampleRate = this.ctx.sampleRate || 44100;
-      this.analyserNode = this.ctx.createAnalyser();
-      this.analyserNode.fftSize = 4096;
-      this.analyserNode.smoothingTimeConstant = 0.02;
-      this.source = this.ctx.createMediaStreamSource(stream);
-      this.source.connect(this.analyserNode);
-      this.tempBuf = new Float32Array(this.analyserNode.fftSize);
-      this.initialized = true;
-      this.running = true;
-      this.processLoop();
-    }catch(e){ console.warn('Pitch init error', e); }
-  },
-  stop: function(){
-    this.running = false;
-    try{ if(this.ctx) this.ctx.close(); }catch(e){}
-    this.initialized = false;
-  },
-  processLoop: function(){
-    if(!this.running) return;
-    this.analyserNode.getFloatTimeDomainData(this.tempBuf);
-    const f = detectPitchAutoCorr(this.tempBuf, pitchParams.sampleRate, pitchParams.minFreq, pitchParams.maxFreq);
-    if(f && !isNaN(f) && f > 0){
-      pitchData.push({ t: Date.now(), f: Math.round(f*10)/10 });
-      if(pitchData.length > maxPoints) pitchData.shift();
-      f0LabelEl.textContent = tt('stF0Prefix','F0: ') + classifyF0(f);
-    } else {
-      pitchData.push({ t: Date.now(), f: null });
-      if(pitchData.length > maxPoints) pitchData.shift();
-      f0LabelEl.textContent = tt('stF0Prefix','F0: ') + '—';
-    }
-    drawPitchCanvas();
-    requestAnimationFrame(()=>this.processLoop());
-  }
-};
-
-function detectPitchAutoCorr(buf, sampleRate, minFreq=60, maxFreq=500){
-  let size = buf.length;
-  let rms=0;
-  for(let i=0;i<size;i++){ const val=buf[i]; rms+=val*val; }
-  rms = Math.sqrt(rms/size);
-  if(rms < 0.001) return null;
-  let bestOffset = -1; let bestCorr = 0;
-  const minLag = Math.floor(sampleRate / maxFreq);
-  const maxLag = Math.floor(sampleRate / minFreq);
-  for(let lag = minLag; lag <= maxLag; lag++){
-    let corr = 0;
-    for(let i=0;i+lag < size; i++){ corr += Math.abs(buf[i] - buf[i+lag]); }
-    corr = 1 - (corr / (size - maxLag));
-    if(corr > bestCorr){ bestCorr = corr; bestOffset = lag; }
-  }
-  if(bestCorr > 0.4 && bestOffset > 0) return sampleRate / bestOffset;
-  return null;
-}
-
-function drawPitchCanvas(){
-  const ctx = pitchCtx;
-  const W = pitchCanvas.width = Math.max(260, pitchCanvas.clientWidth);
-  const H = pitchCanvas.height = Math.max(120, pitchCanvas.clientHeight);
-  function yFromHz(hz){
-    const minHz = 50, maxHz = 450;
-    const clamped = Math.max(minHz, Math.min(maxHz, hz));
-    const pct = (clamped - minHz) / (maxHz - minHz);
-    return H - (pct * H);
-  }
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-2') || '#fdeef4';
-  ctx.fillRect(0,0,W,H);
-
-  const r = currentRange();
-  if(r.min !== null && r.max !== null){
-    const yMin = yFromHz(r.max);
-    const yMax = yFromHz(r.min);
-    ctx.fillStyle = 'rgba(231,131,173,0.16)';
-    ctx.fillRect(0, yMin, W, yMax - yMin);
-  }
-
-  ctx.strokeStyle = 'rgba(90,50,70,0.12)'; ctx.lineWidth=1;
-  [100,150,200,250,300,350,400].forEach(freq=>{
-    const y = yFromHz(freq);
-    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
-    ctx.fillStyle = 'rgba(90,50,70,0.45)'; ctx.font='10px Inter';
-    ctx.fillText(freq + ' Hz', 4, y - 4);
-  });
-
-  ctx.beginPath();
-  const len = pitchData.length;
-  for(let i=0;i<len;i++){
-    const el = pitchData[i];
-    const x = (i / Math.max(1, maxPoints-1)) * W;
-    const f = el.f;
-    const y = f ? yFromHz(f) : H - 2;
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  }
-  ctx.strokeStyle = 'rgba(231,131,173,0.95)'; ctx.lineWidth = 2.4; ctx.stroke();
-
-  const last = pitchData[pitchData.length-1];
-  if(last && last.f){
-    const x = W * ((pitchData.length-1) / Math.max(1, maxPoints-1));
-    const y = yFromHz(last.f);
-    ctx.fillStyle = '#7a3a56';
-    ctx.beginPath(); ctx.arc(x,y,3.4,0,Math.PI*2); ctx.fill();
-  }
-}
-for(let i=0;i<maxPoints;i++) pitchData.push({ t: Date.now() - (maxPoints-i)*100, f: null });
-drawPitchCanvas();
 
 /* ---------- Grabaciones & subida ---------- */
 let mediaRecorder = null;
@@ -1147,7 +906,7 @@ function statsFromArray(arr){
 }
 
 async function measurePhrase(key, text, durationMs){
-  if(!globalStream){
+  if(!voz.stream){
     alert(tt('errActivaMicPrimero','Activa el micrófono primero (Iniciar micrófono) en el panel de Sonómetro.'));
     return;
   }
@@ -1155,7 +914,7 @@ async function measurePhrase(key, text, durationMs){
   if(resultEl) resultEl.textContent = tt('stMidiendo','Midiendo…');
   log(tt('logMedicionIniciada','Medición iniciada: ') + text);
 
-  const mr = new MediaRecorder(globalStream);
+  const mr = new MediaRecorder(voz.stream);
   const chunks = [];
   mr.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
 
@@ -1164,21 +923,12 @@ async function measurePhrase(key, text, durationMs){
   let samplerTimer = null;
   let elapsed = 0;
 
-  if(!pitchProcessor.initialized){ pitchProcessor.init(globalStream); }
-
   mr.start();
   const startTime = Date.now();
 
   await new Promise(resolve=>{
     samplerTimer = setInterval(()=>{
-      try{
-        const buf = pitchProcessor.tempBuf;
-        if(buf){
-          pitchProcessor.analyserNode.getFloatTimeDomainData(buf);
-          const f = detectPitchAutoCorr(buf, pitchParams.sampleRate, pitchParams.minFreq, pitchParams.maxFreq);
-          samples.push(f === null ? null : Math.round(f*10)/10);
-        }
-      }catch(e){}
+      samples.push(voz.currentF0());
       elapsed = Date.now() - startTime;
       if(elapsed >= durationMs){ clearInterval(samplerTimer); resolve(); }
     }, sampleInterval);
@@ -1775,99 +1525,6 @@ window.showLog = showLog;
 })();
 
 /* ---------- Ventana F0 arrastrable / redimensionable ---------- */
-(function setupPitchWindow(){
-  const win = document.getElementById('pitchWindow');
-  const handle = document.getElementById('pHandle');
-  const minBtn = document.getElementById('togglePitchMin');
-  const closeBtn = document.getElementById('closePitch');
-  const resizer = document.getElementById('pitchResizer');
-  const toggleVisibilityBtn = document.getElementById('togglePitchVisibilityBtn');
-  const pitchVisibilityLabel = document.getElementById('pitchVisibilityLabel');
-  let dragging = false, dragOffset={x:0,y:0}, resizing=false, startRect=null;
-
-  try{
-    const s = localStorage.getItem('vaa_pitch_state');
-    if(s){
-      const obj = JSON.parse(s);
-      if(obj.pos){ win.style.left = obj.pos.left + 'px'; win.style.top = obj.pos.top + 'px'; }
-      if(obj.size){ win.style.width = obj.size.w + 'px'; win.style.height = obj.size.h + 'px'; }
-      if(obj.minimized) win.classList.add('minimized');
-      if(obj.visible === false){ win.classList.add('hidden'); toggleVisibilityBtn.textContent = tt('btnMostrarF0','Mostrar gráfico F0'); pitchVisibilityLabel.textContent = tt('lblF0Oculto','Gráfico F0: oculto'); }
-      else { toggleVisibilityBtn.textContent = tt('btnOcultarF0','Ocultar gráfico F0'); pitchVisibilityLabel.textContent = tt('lblF0Visible','Gráfico F0: visible (ventana flotante)'); }
-    } else {
-      toggleVisibilityBtn.textContent = 'Ocultar gráfico F0';
-      pitchVisibilityLabel.textContent = tt('lblF0Visible','Gráfico F0: visible (ventana flotante)');
-    }
-  }catch(e){}
-
-  function persist(){ try{
-    const rect = win.getBoundingClientRect();
-    localStorage.setItem('vaa_pitch_state', JSON.stringify({ pos:{ left: Math.round(rect.left), top: Math.round(rect.top) }, size:{ w: Math.round(rect.width), h: Math.round(rect.height) }, minimized: win.classList.contains('minimized'), visible: !win.classList.contains('hidden') }));
-  }catch(e){} }
-
-  handle.addEventListener('mousedown', function(e){
-    dragging = true;
-    const rect = win.getBoundingClientRect();
-    dragOffset = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    document.body.style.userSelect='none'; handle.style.cursor='grabbing';
-  });
-  document.addEventListener('mousemove', function(e){
-    if(dragging){
-      const margin=6;
-      const maxX = window.innerWidth - win.offsetWidth - margin;
-      const maxY = window.innerHeight - win.offsetHeight - margin;
-      win.style.left = Math.max(margin, Math.min(maxX, e.clientX - dragOffset.x)) + 'px';
-      win.style.top = Math.max(margin, Math.min(maxY, e.clientY - dragOffset.y)) + 'px';
-    } else if(resizing && startRect){
-      const w = Math.max(220, startRect.width + (e.clientX - startRect.mx));
-      const h = Math.max(120, startRect.height + (e.clientY - startRect.my));
-      win.style.width = w + 'px'; win.style.height = h + 'px';
-      drawPitchCanvas();
-    }
-  });
-  document.addEventListener('mouseup', function(){
-    if(dragging){ dragging=false; handle.style.cursor='grab'; document.body.style.userSelect=''; persist(); }
-    if(resizing){ resizing=false; startRect=null; persist(); }
-  });
-
-  handle.addEventListener('touchstart', function(ev){ dragging=true; const t=ev.touches[0]; const rect=win.getBoundingClientRect(); dragOffset={x:t.clientX-rect.left,y:t.clientY-rect.top}; document.body.style.userSelect='none'; }, {passive:false});
-  document.addEventListener('touchmove', function(ev){ if(!dragging) return; const t=ev.touches[0]; win.style.left = (t.clientX - dragOffset.x) + 'px'; win.style.top = (t.clientY - dragOffset.y) + 'px'; ev.preventDefault(); }, {passive:false});
-  document.addEventListener('touchend', function(){ if(dragging){ dragging=false; document.body.style.userSelect=''; persist(); } });
-
-  resizer.addEventListener('mousedown', function(e){
-    resizing = true;
-    const rect = win.getBoundingClientRect();
-    startRect = { width: rect.width, height: rect.height, mx: e.clientX, my: e.clientY };
-    document.body.style.userSelect='none';
-  });
-  resizer.addEventListener('touchstart', function(ev){
-    resizing = true;
-    const t = ev.touches[0];
-    const rect = win.getBoundingClientRect();
-    startRect = { width: rect.width, height: rect.height, mx: t.clientX, my: t.clientY };
-  }, {passive:false});
-
-  minBtn.addEventListener('click', function(){ win.classList.toggle('minimized'); persist(); });
-  closeBtn.addEventListener('click', function(){
-    win.classList.add('hidden');
-    toggleVisibilityBtn.textContent = tt('btnMostrarF0','Mostrar gráfico F0');
-    pitchVisibilityLabel.textContent = tt('lblF0Oculto','Gráfico F0: oculto');
-    persist();
-  });
-  toggleVisibilityBtn.addEventListener('click', function(){
-    if(win.classList.contains('hidden')){
-      win.classList.remove('hidden');
-      toggleVisibilityBtn.textContent = tt('btnOcultarF0','Ocultar gráfico F0');
-      pitchVisibilityLabel.textContent = tt('lblF0Visible','Gráfico F0: visible (ventana flotante)');
-    } else {
-      win.classList.add('hidden');
-      toggleVisibilityBtn.textContent = tt('btnMostrarF0','Mostrar gráfico F0');
-      pitchVisibilityLabel.textContent = tt('lblF0Oculto','Gráfico F0: oculto');
-    }
-    persist();
-  });
-})();
-
 function updateSmallSummaryLabel(){
   try{
     const analysis = buildAnalysisSummary();
@@ -1896,15 +1553,6 @@ window.addEventListener('cv-lang-changed', function(){
   try{
     const tb = document.getElementById('toggleDockBtn');
     if(tb) tb.textContent = (document.getElementById('floatingPanel').classList.contains('floating')) ? tt('stAnclar','Anclar') : tt('stFlotar','Flotar');
-  }catch(e){}
-  try{
-    const win = document.getElementById('pitchWindow');
-    const toggleVisibilityBtn = document.getElementById('togglePitchVisibilityBtn');
-    const pitchVisibilityLabel = document.getElementById('pitchVisibilityLabel');
-    if(win && toggleVisibilityBtn && pitchVisibilityLabel){
-      if(win.classList.contains('hidden')){ toggleVisibilityBtn.textContent = tt('btnMostrarF0','Mostrar gráfico F0'); pitchVisibilityLabel.textContent = tt('lblF0Oculto','Gráfico F0: oculto'); }
-      else { toggleVisibilityBtn.textContent = tt('btnOcultarF0','Ocultar gráfico F0'); pitchVisibilityLabel.textContent = tt('lblF0Visible','Gráfico F0: visible (ventana flotante)'); }
-    }
   }catch(e){}
   try{
     document.querySelectorAll('#phrasesContainer button.ghost').forEach(function(b){
